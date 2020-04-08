@@ -1,11 +1,11 @@
-var svgHeight = 900;
+var svgHeight = 500;
 var svgWidth = 900;
 
 var margin = {
-    top: 20, 
-    right: 20, 
-    bottom: 30, 
-    left: 40
+    top: 30, 
+    right: 30, 
+    bottom: 40, 
+    left: 60
 };
 
 var chartWidth = svgWidth - margin.left - margin.right;
@@ -26,8 +26,6 @@ d3.csv("../assets/data/data.csv").then(function(data) {
         item.smokes = +item.smokes;
       });
   
-
-
   var xScale = d3.scaleLinear()
     .domain([0,d3.max(data,function (d) { return d.poverty })])
     .range([0,chartWidth]);
@@ -41,12 +39,27 @@ var xAxis = d3.axisBottom()
 var yAxis = d3.axisLeft()
   .scale(yScale);
 
-  chartGroup.append("g")
+chartGroup.append("g")
   .attr("transform", `translate(0, ${chartHeight})`)
   .call(xAxis);
 
+chartGroup.append("text")             
+.attr("transform",
+      "translate(" + (chartWidth/2) + " ," + 
+                     (chartHeight + margin.top) + ")")
+.style("text-anchor", "middle")
+.text("Poverty Rate (%)");
+
 chartGroup.append("g")
   .call(yAxis);
+
+  chartGroup.append("text")
+  .attr("transform", "rotate(-90)")
+  .attr("y", 0 - margin.left)
+  .attr("x",0 - (chartHeight / 2))
+  .attr("dy", "1em")
+  .style("text-anchor", "middle")
+  .text("Smoking Rate (%)"); 
 
 var circles = chartGroup.selectAll("circle")
 .data(data)
@@ -54,8 +67,9 @@ var circles = chartGroup.selectAll("circle")
 .append("circle")
 .attr("cx", d => xScale(d.poverty))
 .attr("cy", d => yScale(d.smokes))
-.attr("r", "20")
-.attr("class", "stateCircle")
+.attr("r", 15)
+.attr("opacity", ".6")
+.attr("class", "stateCircle");
 
 var circleText = chartGroup.selectAll("text")
 .data(data)
@@ -63,9 +77,11 @@ var circleText = chartGroup.selectAll("text")
 .append("text")
 .attr("x", d => xScale(d.poverty))
 .attr("y", d => yScale(d.smokes))
-.text (d => d.abbr)
-.attr("class", "stateText")
-
+.classed("text-circles", true)
+.attr("dy", 5)
+.attr("font-size", "9px")
+.attr("text-anchor", "middle")
+.text (d => d.abbr);
 
   });
 
